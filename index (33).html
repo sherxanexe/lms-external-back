@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Astana Learning Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background: linear-gradient(135deg, #e6f3ff 0%, #b3d9ff 30%, #87ceeb 100%);
+            color: #00386b;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Cloud background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 60% 70%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 90% 90%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .main-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.3);
+            background: linear-gradient(45deg, #00386b, #ffcc00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            color: #00386b;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #ffcc00, #ffd633);
+            color: #00386b;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
+            margin: 1rem;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 204, 0, 0.4);
+        }
+
+        /* Swipeable cards container */
+        .cards-container {
+            margin-top: 3rem;
+            position: relative;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            overflow: hidden;
+        }
+
+        .swipeable-card {
+            position: absolute;
+            width: 300px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 56, 107, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            cursor: grab;
+            transition: all 0.3s ease;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            user-select: none;
+        }
+
+        .swipeable-card:active {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        .swipeable-card.dragging {
+            z-index: 100;
+            transform: translate(-50%, -50%) scale(1.1) rotate(5deg);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ffcc00;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #00386b;
+        }
+
+        .card-text {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Airplane and trail system */
+        .airplane-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .airplane {
+            position: absolute;
+            font-size: 1.5rem;
+            color: #00386b;
+            z-index: 3;
+        }
+
+        .trail {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+            border-radius: 1px;
+            z-index: 2;
+        }
+
+        .footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            opacity: 0.7;
+            font-size: 0.9rem;
+            color: #00386b;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .main-title {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .swipeable-card {
+                width: 250px;
+                height: 200px;
+                padding: 1.5rem;
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .cards-indicator {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            gap: 0.5rem;
+        }
+
+        .indicator-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(0, 56, 107, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .indicator-dot.active {
+            background: #ffcc00;
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="airplane-container" id="airplaneContainer"></div>
+
+    <div class="container">
+        <div class="logo-section">
+            <h1 class="main-title pulse">Welcome to Air Astana Learning</h1>
+            <p class="subtitle">
+                Добро пожаловать в корпоративную систему обучения Air Astana! 
+                Развивайте свои навыки, изучайте новое и достигайте профессиональных высот вместе с нами.
+            </p>
+        </div>
+
+        <div class="action-section">
+            <a href="#" class="cta-button" onclick="startLearning()">
+                🚀 Начать обучение
+            </a>
+            <a href="#" class="cta-button" onclick="exploreCourses()">
+                📚 Explore Courses
+            </a>
+        </div>
+
+        <div class="cards-container" id="cardsContainer">
+            <div class="swipeable-card" data-card="0">
+                <div class="card-icon">🎯</div>
+                <h3 class="card-title">Персонализированное обучение</h3>
+                <p class="card-text">Курсы, адаптированные под ваши потребности и карьерные цели в авиационной индустрии</p>
+            </div>
+        </div>
+
+        <div class="cards-indicator" id="cardsIndicator">
+            <div class="indicator-dot active" data-card="0"></div>
+            <div class="indicator-dot" data-card="1"></div>
+            <div class="indicator-dot" data-card="2"></div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2025 Air Astana. Excellence in Aviation Training</p>
+        </div>
+    </div>
+
+    <script>
+        // Card data
+        const cardData = [
+            {
+                icon: '🎯',
+                title: 'Персонализированное обучение',
+                text: 'Курсы, адаптированные под ваши потребности и карьерные цели в авиационной индустрии'
+            },
+            {
+                icon: '⚡',
+                title: 'Быстрое развитие',
+                text: 'Эффективные методики обучения для быстрого освоения сложных авиационных процедур'
+            },
+            {
+                icon: '🏆',
+                title: 'Сертификация',
+                text: 'Получайте международные сертификаты и повышайте свою квалификацию в авиации'
+            }
+        ];
+
+        let currentCard = 0;
+        let isDragging = false;
+        let startX = 0;
+        let currentX = 0;
+
+        // Initialize cards
+        function initCards() {
+            const container = document.getElementById('cardsContainer');
+            const indicators = document.getElementById('cardsIndicator');
+            
+            container.innerHTML = '';
+            
+            cardData.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'swipeable-card';
+                cardElement.style.display = index === 0 ? 'block' : 'none';
+                cardElement.innerHTML = `
+                    <div class="card-icon">${card.icon}</div>
+                    <h3 class="card-title">${card.title}</h3>
+                    <p class="card-text">${card.text}</p>
+                `;
+                
+                // Add touch events
+                cardElement.addEventListener('mousedown', startDrag);
+                cardElement.addEventListener('touchstart', startDrag);
+                
+                container.appendChild(cardElement);
+            });
+            
+            // Add indicator click events
+            indicators.querySelectorAll('.indicator-dot').forEach((dot, index) => {
+                dot.addEventListener('click', () => showCard(index));
+            });
+        }
+
+        function startDrag(e) {
+            isDragging = true;
+            startX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+            
+            const card = e.target.closest('.swipeable-card');
+            card.classList.add('dragging');
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', drag);
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            
+            currentX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+            const diffX = currentX - startX;
+            
+            const card = document.querySelector('.swipeable-card.dragging');
+            if (card) {
+                card.style.transform = `translate(-50%, -50%) translateX(${diffX}px) rotate(${diffX * 0.1}deg)`;
+            }
+        }
+
+        function endDrag() {
+            if (!isDragging) return;
+            
+            const card = document.querySelector('.swipeable-card.dragging');
+            if (card) {
+                const diffX = currentX - startX;
+                
+                if (Math.abs(diffX) > 100) {
+                    // Swipe detected
+                    if (diffX > 0) {
+                        // Swipe right - previous card
+                        showCard(currentCard - 1);
+                    } else {
+                        // Swipe left - next card
+                        showCard(currentCard + 1);
+                    }
+                }
+                
+                card.classList.remove('dragging');
+                card.style.transform = 'translate(-50%, -50%)';
+            }
+            
+            isDragging = false;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('touchmove', drag);
+            document.removeEventListener('mouseup', endDrag);
+            document.removeEventListener('touchend', endDrag);
+        }
+
+        function showCard(index) {
+            if (index < 0) index = cardData.length - 1;
+            if (index >= cardData.length) index = 0;
+            
+            currentCard = index;
+            
+            // Hide all cards
+            document.querySelectorAll('.swipeable-card').forEach(card => {
+                card.style.display = 'none';
+            });
+            
+            // Show current card
+            document.querySelectorAll('.swipeable-card')[currentCard].style.display = 'block';
+            
+            // Update indicators
+            document.querySelectorAll('.indicator-dot').forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === currentCard);
+            });
+        }
+
+        // Airplane system
+        function createAirplane() {
+            const container = document.getElementById('airplaneContainer');
+            
+            // Random start and end points
+            const startSide = Math.random() > 0.5 ? 'left' : 'right';
+            const startY = Math.random() * window.innerHeight;
+            const endY = Math.random() * window.innerHeight;
+            
+            let startX, endX;
+            if (startSide === 'left') {
+                startX = -50;
+                endX = window.innerWidth + 50;
+            } else {
+                startX = window.innerWidth + 50;
+                endX = -50;
+            }
+            
+            // Create airplane
+            const airplane = document.createElement('div');
+            airplane.className = 'airplane';
+            airplane.innerHTML = startSide === 'left' ? '✈️' : '🛩️';
+            airplane.style.left = startX + 'px';
+            airplane.style.top = startY + 'px';
+            airplane.style.fontSize = (Math.random() * 0.5 + 0.8) + 'rem';
+            airplane.style.opacity = Math.random() * 0.4 + 0.6;
+            
+            // Create trail
+            const trail = document.createElement('div');
+            trail.className = 'trail';
+            trail.style.left = startX + 'px';
+            trail.style.top = (startY + 10) + 'px';
+            trail.style.width = '0px';
+            trail.style.transformOrigin = 'left center';
+            
+            container.appendChild(airplane);
+            container.appendChild(trail);
+            
+            // Animation
+            const duration = Math.random() * 15000 + 10000; // 10-25 seconds
+            const distance = Math.abs(endX - startX);
+            
+            let startTime = Date.now();
+            
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = elapsed / duration;
+                
+                if (progress >= 1) {
+                    airplane.remove();
+                    trail.remove();
+                    return;
+                }
+                
+                // Move airplane
+                const currentX = startX + (endX - startX) * progress;
+                const currentY = startY + (endY - startY) * progress;
+                
+                airplane.style.left = currentX + 'px';
+                airplane.style.top = currentY + 'px';
+                
+                // Update trail
+                const trailLength = distance * progress;
+                const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+                
+                trail.style.width = trailLength + 'px';
+                trail.style.transform = `rotate(${angle}deg)`;
+                trail.style.opacity = Math.max(0, 1 - progress);
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+
+        // Auto card rotation
+        function autoRotateCards() {
+            setInterval(() => {
+                if (!isDragging) {
+                    showCard(currentCard + 1);
+                }
+            }, 5000);
+        }
+
+        function startLearning() {
+            console.log('Starting learning journey...');
+            alert('Добро пожаловать! Переходим к курсам обучения...');
+        }
+
+        function exploreCourses() {
+            console.log('Exploring courses...');
+            alert('Opening course catalog...');
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            initCards();
+            autoRotateCards();
+            
+            // Create airplanes regularly
+            setInterval(createAirplane, 2000); // Every 2 seconds
+            
+            // Initial airplanes
+            for (let i = 0; i < 5; i++) {
+                setTimeout(createAirplane, i * 1000);
+            }
+            
+            // Entrance animation
+            const container = document.querySelector('.container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                container.style.transition = 'all 1s ease';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>
